@@ -51,7 +51,8 @@ public class CountDownActivity extends AppCompatActivity {
 		int id = item.getItemId();
 
 		//noinspection SimplifiableIfStatement
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_reset) {
+			resetButton();
 			return true;
 		}
 
@@ -64,7 +65,7 @@ public class CountDownActivity extends AppCompatActivity {
 		theButton.setEnabled(true);
 		theButton.setBackgroundTintList(ColorStateList.valueOf(
 				getResources().getColor(R.color.colorAccent)));
-		theButtonCaption.setText("Start");
+		theButtonCaption.setText(R.string.start);
 	}
 
 	private Runnable countDownAction = new Runnable() {
@@ -73,7 +74,7 @@ public class CountDownActivity extends AppCompatActivity {
 			theButton.setEnabled(false);
 			theButton.setBackgroundTintList(ColorStateList.valueOf(
 					getResources().getColor(R.color.colorRunning)));
-			theButtonCaption.setText("Running");
+			theButtonCaption.setText(R.string.running);
 			theCounterView.setText(Integer.toString(theCounter));
 			if (theCounter-- > 0) {
 				theCounterView.postDelayed(this, 1000);

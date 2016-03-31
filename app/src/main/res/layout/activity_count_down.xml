@@ -50,7 +50,7 @@
         android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:id="@+id/theButtonCaption"
-        android:text="Start"
+        android:text="@string/start"
         android:elevation="30dp"
         android:gravity="center"
         android:layout_gravity="bottom|center_horizontal"
