@@ -9,6 +9,9 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import ibt.ortc.api.*;
+import ibt.ortc.extensibility.*;
+
 public class CountDownActivity extends AppCompatActivity {
 
 	@Override
@@ -18,14 +21,15 @@ public class CountDownActivity extends AppCompatActivity {
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-		fab.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-						.setAction("Action", null).show();
-			}
-		});
+		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.theButton);
+		if (fab != null) {
+			fab.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View view) {
+					startRealtimeClient();
+				}
+			});
+		}
 	}
 
 	@Override
@@ -48,5 +52,73 @@ public class CountDownActivity extends AppCompatActivity {
 		}
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	private OrtcClient client;
+
+	private boolean startRealtimeClient() {
+		OrtcFactory factory = null;
+
+		Ortc ortc = new Ortc();
+		try {
+			factory = ortc.loadOrtcFactory("IbtRealtimeSJ");
+		}
+		catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		if (factory == null) {
+			return false;
+		}
+		client = factory.createClient();
+
+		client.setClusterUrl("http://ortc-developers.realtime.co/server/2.1/");
+		client.setConnectionMetadata("TimeSyncAndroidApp");
+
+		client.onConnected = new OnConnected() {
+			@Override
+			public void run(final OrtcClient sender) {
+				// Messaging client connected
+
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						client.subscribe("Blinks", true,
+								new OnMessage() {
+									public void run(OrtcClient sender, String channel, String message) {
+										// Received 'message' from 'channel'
+									};
+								}
+						);
+					}
+				});
+			}
+		};
+
+		client.onSubscribed = new OnSubscribed() {
+			@Override
+			public void run(OrtcClient sender, String channel) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						client.send("Blinks", "Hello World");
+					}
+				});
+			}
+		};
+
+		client.onException = new OnException() {
+			@Override
+			public void run(OrtcClient send, Exception e) {
+				e.printStackTrace();
+			}
+		};
+		client.connect(getString(R.string.api_key), "my_authentication_token");
+		return true;
 	}
 }
