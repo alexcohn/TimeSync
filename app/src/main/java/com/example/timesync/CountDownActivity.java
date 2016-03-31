@@ -2,17 +2,22 @@ package com.example.timesync;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import ibt.ortc.api.*;
 import ibt.ortc.extensibility.*;
 
 public class CountDownActivity extends AppCompatActivity {
+
+	private TextView theCounterView;
+	private FloatingActionButton theButton;
+	private int theCounter = 10;
+	private OrtcClient client;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -21,15 +26,10 @@ public class CountDownActivity extends AppCompatActivity {
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.theButton);
-		if (fab != null) {
-			fab.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					startRealtimeClient();
-				}
-			});
-		}
+		theCounterView = (TextView) findViewById(R.id.theCounter);
+		theButton = (FloatingActionButton) findViewById(R.id.theButton);
+//		theButton.setEnabled(false);
+//		startRealtimeClient();
 	}
 
 	@Override
@@ -54,7 +54,19 @@ public class CountDownActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private OrtcClient client;
+	private Runnable countDownAction = new Runnable() {
+		@Override
+		public void run() {
+			theCounterView.setText(Integer.toString(theCounter));
+			if (theCounter-- > 0) {
+				theCounterView.postDelayed(this, 1000);
+			}
+		};
+	};
+
+	public void startCountDown(View view) {
+		countDownAction.run();
+	}
 
 	private boolean startRealtimeClient() {
 		OrtcFactory factory = null;
@@ -83,32 +95,22 @@ public class CountDownActivity extends AppCompatActivity {
 		client.onConnected = new OnConnected() {
 			@Override
 			public void run(final OrtcClient sender) {
-				// Messaging client connected
-
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						client.subscribe("Blinks", true,
-								new OnMessage() {
-									public void run(OrtcClient sender, String channel, String message) {
-										// Received 'message' from 'channel'
-									};
+				client.subscribe("Blinks", true,
+						new OnMessage() {
+							public void run(OrtcClient sender, String channel, String message) {
+								if (message.equals("START")) {
+									theCounterView.post(countDownAction);
 								}
-						);
-					}
-				});
+							};
+						}
+				);
 			}
 		};
 
 		client.onSubscribed = new OnSubscribed() {
 			@Override
 			public void run(OrtcClient sender, String channel) {
-				runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						client.send("Blinks", "Hello World");
-					}
-				});
+				theButton.setEnabled(true);
 			}
 		};
 
