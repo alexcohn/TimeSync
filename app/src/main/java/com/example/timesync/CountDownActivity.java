@@ -120,7 +120,7 @@ public class CountDownActivity extends AppCompatActivity {
 				client.subscribe("Blinks", true,
 						new OnMessage() {
 							public void run(OrtcClient sender, String channel, String message) {
-								if (message.equals("START")) {
+								if (message.equals("START") && theButton.isEnabled()) {
 									theCounterView.post(countDownAction);
 								}
 							};
