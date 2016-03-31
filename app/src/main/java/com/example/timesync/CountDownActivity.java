@@ -28,8 +28,8 @@ public class CountDownActivity extends AppCompatActivity {
 
 		theCounterView = (TextView) findViewById(R.id.theCounter);
 		theButton = (FloatingActionButton) findViewById(R.id.theButton);
-//		theButton.setEnabled(false);
-//		startRealtimeClient();
+		theButton.setEnabled(false);
+		startRealtimeClient();
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class CountDownActivity extends AppCompatActivity {
 	};
 
 	public void startCountDown(View view) {
-		countDownAction.run();
+		client.send("Blinks", "START");
 	}
 
 	private boolean startRealtimeClient() {
