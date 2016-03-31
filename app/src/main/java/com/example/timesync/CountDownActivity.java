@@ -1,5 +1,7 @@
 package com.example.timesync;
 
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +18,7 @@ public class CountDownActivity extends AppCompatActivity {
 
 	private TextView theCounterView;
 	private FloatingActionButton theButton;
+	private TextView theButtonCaption;
 	private int theCounter = 10;
 	private OrtcClient client;
 
@@ -29,6 +32,7 @@ public class CountDownActivity extends AppCompatActivity {
 		theCounterView = (TextView) findViewById(R.id.theCounter);
 		theButton = (FloatingActionButton) findViewById(R.id.theButton);
 		theButton.setEnabled(false);
+		theButtonCaption = (TextView) findViewById(R.id.theButtonCaption);
 		startRealtimeClient();
 	}
 
@@ -54,12 +58,29 @@ public class CountDownActivity extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void resetButton() {
+		theCounter = 10;
+		theCounterView.setText("");
+		theButton.setEnabled(true);
+		theButton.setBackgroundTintList(ColorStateList.valueOf(
+				getResources().getColor(R.color.colorAccent)));
+		theButtonCaption.setText("Start");
+	}
+
 	private Runnable countDownAction = new Runnable() {
-		@Override
+	@Override
 		public void run() {
+			theButton.setEnabled(false);
+			theButton.setBackgroundTintList(ColorStateList.valueOf(
+					getResources().getColor(R.color.colorRunning)));
+			theButtonCaption.setText("Running");
 			theCounterView.setText(Integer.toString(theCounter));
 			if (theCounter-- > 0) {
 				theCounterView.postDelayed(this, 1000);
+			}
+			else {
+				theButton.setBackgroundTintList(ColorStateList.valueOf(
+						getResources().getColor(R.color.colorFinished)));
 			}
 		};
 	};
@@ -110,7 +131,12 @@ public class CountDownActivity extends AppCompatActivity {
 		client.onSubscribed = new OnSubscribed() {
 			@Override
 			public void run(OrtcClient sender, String channel) {
-				theButton.setEnabled(true);
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						theButton.setEnabled(true);
+					}
+				});
 			}
 		};
 

@@ -22,16 +22,41 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_count_down"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/theCounter"
+        android:text=""
+        android:textColor="@android:color/black"
+        android:layout_marginTop="200dp"
+        android:gravity="center"
+        android:layout_gravity="top|center_horizontal"
+        android:textStyle="bold"
+        android:typeface="sans"
+        android:textSize="50sp"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/theButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="bottom|center_horizontal"
         android:layout_margin="@dimen/fab_margin"
         android:onClick="startCountDown"
-        android:src="@android:drawable/ic_dialog_email"
+        android:src="@null"
+        android:contentDescription="Start Button"
         android:importantForAccessibility="yes"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="200dp"
+        android:id="@+id/theButtonCaption"
+        android:text="Start"
+        android:elevation="30dp"
+        android:gravity="center"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="@dimen/fab_margin"
+        android:typeface="sans"
+        android:textSize="30sp"
+        android:textAllCaps="true"/>
 
 </android.support.design.widget.CoordinatorLayout>
